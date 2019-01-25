@@ -1,0 +1,11 @@
+apiVersion: skaffold/v1beta3
+kind: Config
+build:
+  artifacts:
+  - image: openfaas-client/test
+    sync:
+      '*.py': .
+deploy:
+  kubectl:
+    manifests:
+    -  kubernetes/*.yaml

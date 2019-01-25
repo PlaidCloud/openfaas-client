@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: openfaas-client
+  labels:
+    app: openfaas-client
+spec:
+  containers:
+  - name: client
+    image: openfaas-client/test
+    imagePullPolicy: Never
+    ports:
+    - name: http
+      hostPort: 8080
+      containerPort: 8080
+  restartPolicy: Never

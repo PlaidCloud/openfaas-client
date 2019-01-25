@@ -1,0 +1,1 @@
+docker build -t openfaas/client-test tests/fixtures/openfaas-functions/test

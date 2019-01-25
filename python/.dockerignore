@@ -1,0 +1,8 @@
+.vscode
+.gitignore
+worker
+k8s
+.pylintrc
+Dockerfile
+README.md
+skaffold.yaml
