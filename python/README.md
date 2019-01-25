@@ -1,5 +1,5 @@
 # OpenFaaS Python Client
-This package was written with the intended use case of interacting with (faas-netes)[https://github.com/openfaas/faas-netes].
+This package was written with the intended use case of interacting with [faas-netes](https://github.com/openfaas/faas-netes).
 
 # Development Dependencies
 Building and running unit tests requires the following:
