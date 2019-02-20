@@ -46,7 +46,12 @@ class ApiResponse():
 class Error(Exception):
     """Base class for exceptions in this module."""
     def __init__(self, response):
-        super().__init__()
+        try:
+            # Python 3 syntax
+            super().__init__()
+        except:
+            # Python 2 syntax
+            super(Exception, self).__init__()
         self.response = response
         self.message = response.status
 
