@@ -12,7 +12,7 @@ from .models.function_definition import FunctionDefinition
 from .models.function_list_entry import FunctionListEntry
 from .models.api_response import ApiResponse, FunctionNotFoundError
 
-class FaasClient():
+class FaasClient(object):
     '''Class for interacting with OpenFaaS deployment.
     '''
     _gateway = 'http://gateway.openfaas:8080'
