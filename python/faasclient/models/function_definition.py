@@ -16,7 +16,7 @@ def _strip_letters(text):
     return text.translate(digits)
 
 
-class FunctionDefinition():
+class FunctionDefinition(object):
     # pylint: disable=too-many-instance-attributes
     _request_params = {}
 

@@ -1,4 +1,4 @@
-class FunctionListEntry():
+class FunctionListEntry(object):
     _name = ''
     _image = ''
     _invocation_count = 0
