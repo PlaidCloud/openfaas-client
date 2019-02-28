@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="openfaas-client",
-    install_requires=['requests', 'simplejson', 'urllib3'],
+    install_requires=['requests', 'simplejson', 'urllib3', 'kubernetes'],
     version="0.1.0",
     packages=find_packages(),
     author="Garrett Bates",
