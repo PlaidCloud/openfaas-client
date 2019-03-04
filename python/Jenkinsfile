@@ -34,7 +34,7 @@ podTemplate(label: 'io',
             if (scm_map.GIT_BRANCH == 'master') {
               // TODO: We need to tag this revision with a version number.
               stage('Trigger Downstream Job') {
-                build job: 'plaid-dev/PR-1642', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
+                build job: 'plaid-dev/PR-1706', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
               }
             }
           }
