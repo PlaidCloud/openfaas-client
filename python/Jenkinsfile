@@ -26,7 +26,7 @@ podTemplate(label: 'io',
               }
 
               stage('Run Unit Tests') {
-                image = docker.build("${plaid_image}:workflow-test", "--pull -f tests/fixtures/openfaas-functions/Dockerfile -f tests/fixtures/openfaas-functions/")
+                image = docker.build("${plaid_image}:workflow-test", "--pull -f tests/fixtures/openfaas-functions/Dockerfile -f tests/fixtures/openfaas-functions/ .")
               }
 
               // No need to publish dev branches, we can change this later.
