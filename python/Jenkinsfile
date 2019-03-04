@@ -11,10 +11,10 @@ podTemplate(label: 'io',
 )
 {
   node(label: 'io') {
-    withCredentials([string(credentialsId: 'offsite-host', variable: 'host')]) {
-      container('docker') {
-        docker.withServer("$host", 'remote-docker-credentials') {
-          docker.withRegistry('', 'gbates101') {
+    // withCredentials([string(credentialsId: 'offsite-host', variable: 'host')]) {
+    //   container('docker') {
+    //     docker.withServer("$host", 'remote-docker-credentials') {
+    //       docker.withRegistry('', 'gbates101') {
             // Checkout source before doing anything else
             // scm_map = checkout scm
             // dir("python") {
@@ -31,15 +31,15 @@ podTemplate(label: 'io',
             // }
 
             // No need to publish dev branches, we can change this later.
-            if (scm_map.GIT_BRANCH == 'master') {
+            // if (scm_map.GIT_BRANCH == 'master') {
               // TODO: We need to tag this revision with a version number.
               stage('Trigger Downstream Job') {
                 build job: 'plaid-dev/PR-1706', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
               }
-            }
-          }
-        }
-      }
-    }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 }
