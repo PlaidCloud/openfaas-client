@@ -16,25 +16,25 @@ podTemplate(label: 'io',
         docker.withServer("$host", 'remote-docker-credentials') {
           docker.withRegistry('', 'gbates101') {
             // Checkout source before doing anything else
-            scm_map = checkout scm
-            dir("python") {
-              stage('Run Linter') {
-                docker.build("${plaid_image}:lint", "--pull --target=lint .").withRun('-t') {c ->
-                  sh "docker logs ${c.id}>pylint.log"
-                }
-                recordIssues tool: pyLint(pattern: 'pylint.log'), qualityGates: [[threshold: 1, type: 'TOTAL_HIGH', unstable: true]]
-              }
+            // scm_map = checkout scm
+            // dir("python") {
+            //   stage('Run Linter') {
+            //     docker.build("${plaid_image}:lint", "--pull --target=lint .").withRun('-t') {c ->
+            //       sh "docker logs ${c.id}>pylint.log"
+            //     }
+            //     recordIssues tool: pyLint(pattern: 'pylint.log'), qualityGates: [[threshold: 1, type: 'TOTAL_HIGH', unstable: true]]
+            //   }
 
-              stage('Run Unit Tests') {
-                image = docker.build("${plaid_image}:workflow-test", "--pull -f tests/fixtures/openfaas-functions/test/Dockerfile tests/fixtures/openfaas-functions/test")
-              }
+            //   stage('Run Unit Tests') {
+            //     image = docker.build("${plaid_image}:workflow-test", "--pull -f tests/fixtures/openfaas-functions/test/Dockerfile tests/fixtures/openfaas-functions/test")
+            //   }
+            // }
 
-              // No need to publish dev branches, we can change this later.
-              if (scm_map.GIT_BRANCH == 'master') {
-                // TODO: We need to tag this revision with a version number.
-                stage('Trigger Downstream Job') {
-                  build job: 'plaid/master', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
-                }
+            // No need to publish dev branches, we can change this later.
+            if (scm_map.GIT_BRANCH == 'master') {
+              // TODO: We need to tag this revision with a version number.
+              stage('Trigger Downstream Job') {
+                build job: 'plaid-dev/PR-1642', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
               }
             }
           }
