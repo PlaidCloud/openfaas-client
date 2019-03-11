@@ -1,3 +1,7 @@
+from __future__ import print_function
+import sys
+
+
 class ApiResponse():
     _status_code = 0
     _reason = ''
@@ -52,8 +56,9 @@ class Error(Exception):
         except:
             # Python 2 syntax
             super(Exception, self).__init__()
+        print('Response is: {}'.format(response), file=sys.stderr)
         self.response = response
-        self.message = response.status
+        self.message = response
 
 class FunctionNotFoundError(Error):
     """Raised when no function is deployed under given name."""
