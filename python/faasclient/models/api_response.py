@@ -41,7 +41,7 @@ class ApiResponse():
             500: InternalServerError,
         }
         exception = switch.get(self.status_code, Error)
-        raise exception(self.status())
+        raise exception(self.status)
 
 class Error(Exception):
     """Base class for exceptions in this module."""
