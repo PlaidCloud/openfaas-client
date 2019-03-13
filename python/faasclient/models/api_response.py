@@ -16,7 +16,7 @@ class ApiResponse():
         print('status code is {}'.format(self._status_code), file=sys.stderr)
         print('reason is {}'.format(self._reason), file=sys.stderr)
         print('text is {}'.format(self._text), file=sys.stderr)
-        print('response is {}'.format(response), file=sys.stderr)
+        print('response is {}'.format(response.__dict__), file=sys.stderr)
 
         if self.status_code >= 400:
             self.raise_http_error()
