@@ -82,7 +82,7 @@ class FaasClient(object):
         config.load_incluster_config()
         kube = client.CoreV1Api()
         kube.delete_namespaced_pod(pod_name, namespace,
-                                   client.V1DeleteOptions())
+                                   body=client.V1DeleteOptions())
         while not asynchronous:
             try:
                 time.sleep(1)
