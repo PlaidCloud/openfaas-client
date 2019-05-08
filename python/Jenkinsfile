@@ -27,9 +27,16 @@ podTemplate(label: 'io',
         // When building from a PR event, we want to read the branch name from the CHANGE_BRANCH binding. This binding does not exist on branch events.
         CHANGE_BRANCH = env.CHANGE_BRANCH ?: scm_map.GIT_BRANCH.minus(~/^origin\//)
 
+        docker_args = ''
+
+        // Add any extra docker build arguments here.
+        if (params.no_cache) {
+          docker_args += '--no-cache'
+        }
+
         dir("python") {
           if (CHANGE_BRANCH == 'master') {
-            docker.build("${image_name}:lint", "--pull --target=lint${docker_flags}.").withRun('-t', 'bash -c "pylint --output-format=parseable --jobs=8 --reports=no>pylint.log"') {c ->
+            docker.build("${image_name}:lint", "--pull --target=lint ${docker_args} .").withRun('-t', 'bash -c "pylint --output-format=parseable --jobs=8 --reports=no>pylint.log"') {c ->
               sh """
                 docker wait ${c.id}
                 docker cp ${c.id}:/client/pylint.log pylint.log
@@ -37,7 +44,7 @@ podTemplate(label: 'io',
             }
             recordIssues tool: pyLint(pattern: 'pylint.log')
           } else {
-            docker.build("${image_name}:lint", "--pull --target=lint${docker_flags}.").withRun('-t') {c ->
+            docker.build("${image_name}:lint", "--pull --target=lint ${docker_args} .").withRun('-t') {c ->
               sh """
                 docker wait ${c.id}
                 docker cp ${c.id}:/client/pylint.log pylint.log
