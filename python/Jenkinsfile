@@ -22,37 +22,38 @@ podTemplate(label: 'io',
     container('docker') {
       docker.withRegistry('', 'plaid-docker') {     
         // Checkout source before doing anything else
-        scm_map = checkout([
-            $class: 'GitSCM',
-            branches: scm.branches,
-            doGenerateSubmoduleConfigurations: false,
-            extensions: [[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: true, recursiveSubmodules: false, reference: '', trackingSubmodules: false]],
-            submoduleCfg: [],
-            userRemoteConfigs: scm.userRemoteConfigs
-        ])
+        scm_map = checkout scm
 
         // When building from a PR event, we want to read the branch name from the CHANGE_BRANCH binding. This binding does not exist on branch events.
         CHANGE_BRANCH = env.CHANGE_BRANCH ?: scm_map.GIT_BRANCH.minus(~/^origin\//)
 
-        if (CHANGE_BRANCH == 'master') {
-          dir("python") {
-            stage('Run Linter') {
-              docker.build("${image_name}:lint", "--pull --target=lint .").withRun('-t') {c ->
-                sh """
-                  docker wait ${c.id}
-                  sh "docker logs ${c.id}>pylint.log"
-                """
-              }
-              recordIssues tool: pyLint(pattern: 'pylint.log'), qualityGates: [[threshold: 1, type: 'TOTAL_HIGH', unstable: true]]
+        dir("python") {
+          if (CHANGE_BRANCH == 'master') {
+            docker.build("${image_name}:lint", "--pull --target=lint${docker_flags}.").withRun('-t', 'bash -c "pylint faasclient --output-format=parseable --jobs=8 --reports=no>pylint.log"') {c ->
+              sh """
+                docker wait ${c.id}
+                docker cp ${c.id}:/client/pylint.log pylint.log
+              """
             }
-
+            recordIssues tool: pyLint(pattern: 'pylint.log')
+          } else {
+            docker.build("${image_name}:lint", "--pull --target=lint${docker_flags}.").withRun('-t') {c ->
+              sh """
+                docker wait ${c.id}
+                docker cp ${c.id}:/client/pylint.log pylint.log
+              """
+            }
+            recordIssues tool: pyLint(pattern: 'pylint.log'), qualityGates: [[threshold: 1, type: 'TOTAL_HIGH', unstable: true]]
+          }
+        }
+        
+        if (CHANGE_BRANCH == 'master') {
             stage('Run Unit Tests') {
               // TODO: Actually run unit tests. This will probably require another container template for workflow-test.
               image = docker.build("${image_name}:workflow-test", "--pull -f tests/fixtures/openfaas-functions/test/Dockerfile tests/fixtures/openfaas-functions/test")
             }
-            // No need to publish dev branches, we can change this later.
+            
             // TODO: We need to tag this revision with a version number.
-            // TODO Template out build parameters here. 
             stage('Trigger Downstream Job') {
               build job: 'plaid/master', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
             }
