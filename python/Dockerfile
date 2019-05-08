@@ -5,7 +5,7 @@ RUN mkdir -p /client \
 COPY . /client/
 WORKDIR /client
 RUN python setup.py install
-CMD ((git diff --name-only origin/master $GIT_COMMIT) | grep .py$) | xargs -r -n1 pylint faasclient --output-format=parseable --jobs=4 --reports=no>pylint.log
+CMD ((git diff --name-only origin/master $GIT_COMMIT) | grep .py$) | xargs -r -n1 pylint --output-format=parseable --jobs=4 --reports=no>pylint.log
 
 FROM python:3.7-slim
 

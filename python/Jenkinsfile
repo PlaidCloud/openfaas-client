@@ -29,7 +29,7 @@ podTemplate(label: 'io',
 
         dir("python") {
           if (CHANGE_BRANCH == 'master') {
-            docker.build("${image_name}:lint", "--pull --target=lint${docker_flags}.").withRun('-t', 'bash -c "pylint faasclient --output-format=parseable --jobs=8 --reports=no>pylint.log"') {c ->
+            docker.build("${image_name}:lint", "--pull --target=lint${docker_flags}.").withRun('-t', 'bash -c "pylint --output-format=parseable --jobs=8 --reports=no>pylint.log"') {c ->
               sh """
                 docker wait ${c.id}
                 docker cp ${c.id}:/client/pylint.log pylint.log
