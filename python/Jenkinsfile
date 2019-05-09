@@ -55,15 +55,14 @@ podTemplate(label: 'io',
         }
         
         if (CHANGE_BRANCH == 'master') {
-            stage('Run Unit Tests') {
-              // TODO: Actually run unit tests. This will probably require another container template for workflow-test.
-              image = docker.build("${image_name}:workflow-test", "--pull -f tests/fixtures/openfaas-functions/test/Dockerfile tests/fixtures/openfaas-functions/test")
-            }
-            
-            // TODO: We need to tag this revision with a version number.
-            stage('Trigger Downstream Job') {
-              build job: 'plaid/master', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
-            }
+          stage('Run Unit Tests') {
+            // TODO: Actually run unit tests. This will probably require another container template for workflow-test.
+            image = docker.build("${image_name}:workflow-test", "--pull -f tests/fixtures/openfaas-functions/test/Dockerfile tests/fixtures/openfaas-functions/test")
+          }
+          
+          // TODO: We need to tag this revision with a version number.
+          stage('Trigger Downstream Job') {
+            build job: 'plaid/master', wait: false, parameters: [[$class: 'BooleanParameterValue', name: 'no_cache', value: true]]
           }
         }
       }
