@@ -50,7 +50,7 @@ class FaasClient(object):
     def scale_url(self):
         return urljoin(self.gateway_url, self._scale_uri)
 
-    def deploy(self, function, asynchronous=True):
+    def deploy(self, function, asynchronous=True, max_wait=None):
         if not isinstance(function, FunctionDefinition):
             raise TypeError('"function" parameter must be of type \
                             FunctionDefinition')
@@ -58,9 +58,11 @@ class FaasClient(object):
             requests.post(self.deploy_url, data=function.serialize()))
 
         # Super janky synchronous wait
-        while not asynchronous:
+        wait = 0
+        while not asynchronous and (not max_wait or wait < max_wait):
             try:
                 time.sleep(1)
+                wait += 1
                 self.get(function.name)
                 break
             except FunctionNotFoundError:
@@ -78,14 +80,16 @@ class FaasClient(object):
             self.cleanup(response.pod_name)
         return response
 
-    def cleanup(self, pod_name, namespace='openfaas-fn', asynchronous=True):
+    def cleanup(self, pod_name, namespace='openfaas-fn', asynchronous=True, max_wait=None):
         config.load_incluster_config()
         kube = client.CoreV1Api()
         kube.delete_namespaced_pod(pod_name, namespace,
                                    body=client.V1DeleteOptions())
-        while not asynchronous:
+        wait = 0
+        while not asynchronous and (not max_wait or wait < max_wait):
             try:
                 time.sleep(1)
+                wait += 1
                 kube.read_namespaced_pod(name=pod_name,
                                          namespace=namespace)
             except ApiException:
