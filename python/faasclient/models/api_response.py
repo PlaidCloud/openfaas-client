@@ -48,12 +48,12 @@ class Error(Exception):
     def __init__(self, response):
         try:
             # Python 3 syntax
-            super().__init__()
+            super().__init__(response.status)
         except:
             # Python 2 syntax
-            super(Exception, self).__init__()
+            super(Exception, self).__init__(response.status)
         self.response = response
-        self.message = response.status
+        # self.message = response.status
 
 class FunctionNotFoundError(Error):
     """Raised when no function is deployed under given name."""
